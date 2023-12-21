@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Page{% endblock %}
+
+{% block content %}
+<div class="container mt-5 ms-5">
+  <h2>User Dashboard</h2>
+  <p>Welcome, {{ session.user_id }}!</p>
+  <a href="/logout">Logout</a>
+</div>
+{% endblock %}

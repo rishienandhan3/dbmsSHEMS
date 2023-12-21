@@ -1,13 +1,31 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <p>Hellow World!</p>
-</body>
-</html>
+{% extends 'base.html' %}
+{% block title %}
+	Home Page
+{% endblock %}
+
+{% block content %}
+<br><br><br>
+<div class="container">
+    <div class="row mt-6">
+        <div class="col-7">
+            <h1 class="fw-bold">Welcome to SHEMS!</h1>
+            <p class="lead mt-4">
+                The Smart Home Energy Management System (SHEMS) plays an important role in empowering homeowners to
+                take control of their energy consumption and optimize electricity expenses.
+            </p>
+            {% if 'user_id' in session %}
+            <a href="{{ url_for('dashboard') }}">
+                <button type="button" class="btn btn-primary mt-3">Dashboard</button>
+            </a>
+            {% else %}
+            <a href="{{ url_for('register') }}">
+                <button type="button" class="btn btn-primary mt-3">Join Today</button>
+            </a>
+            {% endif %}
+        </div>
+        <div class="col-5">
+            <img src="{{url_for('static', filename='homepage_img.jpeg')}}" height="300" width="330"/>
+        </div>
+    </div>
+</div>
+{% endblock content %}
