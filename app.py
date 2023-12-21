@@ -54,6 +54,17 @@ def get_next_DeviceID():
     else:
         return max_id + 1
 
+def get_next_LocationID():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    max_id = cursor.execute('SELECT MAX(LocationID) FROM ServiceLocation').fetchone()[0]
+    connection.commit()
+    connection.close()
+    if max_id is None:
+        return 1
+    else:
+        return max_id + 1
+
 
 # Route to render the registration form
 @app.route('/register', methods=['GET', 'POST'])
@@ -193,7 +204,6 @@ def add_location():
     if 'user_id' in session:
         if request.method == 'POST':
             user_id = session['user_id']
-            address_id = request.form['address_id']
             move_in_date = request.form['move_in_date']
             square_footage = request.form['square_footage']
             bedrooms = request.form['bedrooms']
@@ -209,12 +219,14 @@ def add_location():
             connection = get_db_connection()
             cursor = connection.cursor()
 
+            next_address_id = get_next_Address_id()
+            next_location_id = get_next_LocationID()
             cursor.execute(
-                'INSERT INTO ServiceLocation (UserID, AddressID, move_in_date, square_footage, bedrooms, occupants) VALUES (?, ?, ?, ?, ?, ?)',
-                (user_id, address_id, move_in_date, square_footage, bedrooms, occupants)
+                'INSERT INTO ServiceLocation (LocationID, UserID, AddressID, move_in_date, square_footage, bedrooms, occupants, hidden) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (next_location_id, user_id, next_address_id, move_in_date, square_footage, bedrooms, occupants, 0)
             )
             connection.commit()
-            next_address_id = get_next_Address_id()
+
             cursor.execute(
                 'INSERT INTO Address (AddressID, address_type, unit, street, house_num, city, state, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
                 (next_address_id, 'location', unit, street, house_num, city, state, zip))
