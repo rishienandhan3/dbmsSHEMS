@@ -2,6 +2,41 @@
 {% block title %}
 	Home Page
 {% endblock %}
+
+{% load static %}
 {% block content %}
-    <h1>Welcome to the Home Page!</h1>
-{% endblock %}
+<div class="container">
+    <div class="row mt-6">
+        <div class="col-7">
+            <h1 class="fw-bold">Plan a trip- enhance your experience with other solo travellers</h1>
+            <p class="lead mt-4">
+                SoloConnect connects you to other people traveling solo wherever your adventure takes you.
+                Make new friends, explore your destination together, and create lifelong memories.
+            </p>
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'user_profile:view_profile' %}">
+                <button type="button" class="btn btn-primary mt-3">Join Today</button>
+            </a>
+            {% else %}
+            <a href="{% url 'user_profile:register_account' %}">
+                <button type="button" class="btn btn-primary mt-3">Join Today</button>
+            </a>
+            {% endif %}
+        </div>
+        <div class="col-5">
+            <!---
+            Placeholder for the final image
+            I'm thinking like a PNG-style logo thing that will layer directly on top of the bg
+            --->
+            <img src="{% static 'home_default/site_images/sc-passport-nobg.png' %}" alt="Image of a line-art plane trail surrounding passport" height="300" width="330"/>
+        </div>
+    </div>
+    <!---
+    <div class="row">
+        inside this row, we can insert a carousel of images for the stock destination photos
+        we may want to use photos of people having a good time and beautiful scenery
+        the carousel does not need controls, but it should have a nice transition (crossfade?)
+    </div>
+    --->
+</div>
+{% endblock content %}
