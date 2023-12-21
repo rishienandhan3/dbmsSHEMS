@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, flash, session, request
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import datetime
 
 # create a Flask App instance:
 app = Flask(__name__)
@@ -121,8 +122,59 @@ def dashboard():
         cursor = connection.cursor()
         # Retrieve user's service locations
         locations = cursor.execute('SELECT * FROM ServiceLocation WHERE UserID = ?', (session['user_id'],)).fetchall()
-        #  NATURAL JOIN User WHERE username == ?', (session['user_id'],)
-        # print(locations)
+        
+        # Retrieve user's Energy Consumption Data in 4 ways and save to session
+        # 1 Average Monthly Energy Consumption
+        # months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+        # avg_monthly = []
+        # for m in range(len(months) - 1):
+        #     this_month = datetime.strptime('22/' + months[m] + '/01 00:00:00', '%y/%m/%d %H:%M:%S')
+        #     next_month = datetime.strptime('22/' + months[m+1] + '/01 00:00:00', '%y/%m/%d %H:%M:%S')
+        #     avg_monthly.append(cursor.execute("""WITH ActiveDevices AS (SELECT DISTINCT DeviceID FROM EnrolledDevice NATURAL JOIN EventData WHERE event_time >= '2022/"""+months[m]+"""/01 00:00:00' 
+        #                                       AND """ + datetime.strptime(event_time)""" < ? AND label = 'Switched On')
+        #                                       SELECT model_type, AVG(value) AS AvgMonthlyEnergyConsumption
+        #                                       FROM DeviceModel NATURAL JOIN EnrolledDevice NATURAL JOIN ActiveDevices NATURAL JOIN EventData 
+        #                                       WHERE event_time >= '2022/"""+months[m]+"""/01 00:00:00' AND event_time < '2022/"""+months[m+1]+"""/01 00:00:00' AND event_type = 'Energy Use'
+        #                                       GROUP BY model_type;""", ()).fetchall())
+        #     connection.commit()
+        #     session['avg_monthly'] = avg_monthly
+        # print(avg_monthly)
+
+        # 2 Total Consumption per Location
+        # total_cost_per_loc = cursor.execute("""SELECT LocationID, SUM(ed.value * ep.hourly_price)/100 AS total_cost_in_dollars
+        #                                     FROM EventData AS ed NATURAL JOIN EnrolledDevice AS er NATURAL JOIN ServiceLocation AS sl NATURAL JOIN Address AS a JOIN EnergyPrice AS ep ON a.zip = ep.zip AND ed.event_time = ep.price_time 
+        #                                     AND ed.event_time = ep.price_time
+        #                                     WHERE event_type = 'Energy Use'
+        #                                     GROUP BY LocationID;""").fetchall()
+        # session["TCPL"] = total_cost_per_loc
+        # total_cons_per_loc = cursor.execute("""SELECT LocationID, SUM(value)
+        #                                     FROM EventData AS ed NATURAL JOIN EnrolledDevice NATURAL JOIN ServiceLocation AS sl
+        #                                     WHERE ed.event_type = 'Energy Use'
+        #                                     GROUP BY sl.LocationID""").fetchall()
+        # connection.commit()
+        # print(total_cons_per_loc)
+
+        # 3 How your energy Cost Compares to Others
+        # comparable_energy = cursor.execute("""WITH PerLocationEnergy AS (SELECT LocationID,SUM(CASE WHEN event_type = 'energy use' THEN value ELSE 0 END) AS TotalEnergy
+        #                                    FROM ServiceLocation NATURAL JOIN EnrolledDevice NATURAL JOIN EventData 
+        #                                    GROUP BY LocationID), AverageEnergyPerLocation AS (SELECT AVG(TotalEnergy) AS AvgEnergy, square_footage
+        #                                    FROM PerLocationEnergy NATURAL JOIN ServiceLocation
+        #                                    GROUP BY square_footage)
+        #                                    SELECT ple.LocationID, ple.TotalEnergy / AVG(ae.AvgEnergy) * 100 AS PercentageOfAverage
+        #                                    FROM PerLocationEnergy AS ple NATURAL JOIN ServiceLocation AS sl
+        #                                    JOIN AverageEnergyPerLocation AS ae ON sl.square_footage BETWEEN ae.square_footage * 0.95 AND ae.square_footage * 1.05
+        #                                    GROUP BY sl.LocationID;""").fetchall()
+        # connection.commit()
+        # session["compare"] = comparable_energy
+
+        # 4 Most Expensive Hour Per Location
+        # expense = cursor.execute("""SELECT EventID, MAX(value)
+        #                          FROM EventData NATURAL JOIN DeviceModel NATURAL JOIN ServiceLocation
+        #                          WHERE event_type = 'Energy Use'
+        #                          GROUP BY LocationID""").fetchall()
+        # connection.commit()
+        # print(expense)
+
         return render_template('dashboard.html', user_locations=locations)
     else:
         return redirect(url_for('login'))
