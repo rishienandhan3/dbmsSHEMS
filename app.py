@@ -19,6 +19,29 @@ def home():
     return render_template("index.html")
 
 
+def get_next_user_id():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    max_id = cursor.execute('SELECT MAX(UserID) FROM User').fetchone()[0]
+    connection.commit()
+    connection.close()
+    if max_id is None:
+        return 1
+    else:
+        return max_id + 1
+
+def get_next_Address_id():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    max_id = cursor.execute('SELECT MAX(AddressID) FROM Address').fetchone()[0]
+    connection.commit()
+    connection.close()
+    if max_id is None:
+        return 1
+    else:
+        return max_id + 1
+
+
 # Route to render the registration form
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -42,7 +65,11 @@ def register():
 
         hashed_password = generate_password_hash(password, method='pbkdf2')
 
-        cursor.execute('INSERT INTO User (username, password, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?, ?)', (username, hashed_password, first_name, last_name, email, phone))
+        next_user_id = get_next_user_id()
+        next_address_id = get_next_Address_id()
+        cursor.execute('INSERT INTO User (UserID, first_name, last_name, email, username, password, phone, AddressID) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (next_user_id, first_name, last_name, email, username, hashed_password, phone, next_address_id))
+        connection.commit()
+        cursor.execute('INSERT INTO Address (AddressID, address_type, unit, street, house_num, city, state, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (next_address_id, 'billing', unit, street, house_num, city, state, zip))
         connection.commit()
         connection.close()
 
@@ -80,7 +107,7 @@ def dashboard():
         connection = get_db_connection()
         cursor = connection.cursor()
         # Retrieve user's service locations
-        locations = cursor.execute('SELECT * FROM ServiceLocation WHERE UserID = ?', (user_id,)).fetchall()
+        locations = cursor.execute('SELECT * FROM ServiceLocation WHERE UserID = ?', ('user_id',)).fetchall()
         return render_template('dashboard.html', user_locations=locations)
     else:
         return redirect(url_for('login'))
