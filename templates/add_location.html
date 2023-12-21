@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Add Location Page{% endblock %}
+
+{% block content %}
+<div class="container mt-5 ms-5">
+  <h2 class="text-primary">Add Service Location</h2>
+  <form method="POST" action="/add_location" class="container mt-3 mb-3">
+  <div class="col-6 mb-3">
+    <h5>Please enter your location details: </h5>
+    <label for="move_in_date">Move-in Date:</label>
+    <input type="date" id="move_in_date" name="move_in_date" required>
+    <br><br>
+    <label for="square_footage">Square Footage:</label>
+    <input type="number" id="square_footage" name="square_footage" required>
+    <br><br>
+    <label for="bedrooms">Bedrooms:</label>
+    <input type="number" id="bedrooms" name="bedrooms" required>
+    <br><br>
+    <label for="occupants">Number of Occupants:</label>
+    <input type="number" id="occupants" name="occupants" required>
+    <br><br>
+  </div>
+  <div class="col-6 mb-4">
+    <h5>Enter your Location Address:</h5>
+    <label for="unit">Unit:</label>
+    <input type="text" id="unit" name="unit" required>
+    <br><br>
+    <label for="street">Street:</label>
+    <input type="text" id="street" name="street" required>
+    <br><br>
+    <label for="house_num">House Number:</label>
+    <input type="text" id="house_num" name="house_num" required>
+    <br><br>
+    <label for="city">City:</label>
+    <input type="text" id="city" name="city" required>
+    <br><br>
+    <label for="state">State:</label>
+    <input type="text" id="state" name="state" required>
+    <br><br>
+    <label for="zip">Zip:</label>
+    <input type="number" id="zip" name="zip" required>
+    </div>
+    <input type="submit" value="Add Location" class="btn btn-outline-primary mb-5">
+  </form>
+</div>
+{% endblock %}
