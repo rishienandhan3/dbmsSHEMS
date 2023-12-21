@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 # create a Flask App instance:
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secret key for session management
+app.config['SECRET_KEY'] = 'your_secret_key'  # TODO: Need to replace with a secret key for session management
 
 # # SQLite database connection
 # DATABASE = 'your_database_name.db'
