@@ -42,6 +42,18 @@ def get_next_Address_id():
         return max_id + 1
 
 
+def get_next_DeviceID():
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    max_id = cursor.execute('SELECT MAX(DeviceID) FROM EnrolledDevice').fetchone()[0]
+    connection.commit()
+    connection.close()
+    if max_id is None:
+        return 1
+    else:
+        return max_id + 1
+
+
 # Route to render the registration form
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -150,6 +162,11 @@ def add_location():
                 (user_id, address_id, move_in_date, square_footage, bedrooms, occupants)
             )
             connection.commit()
+            next_address_id = get_next_Address_id()
+            cursor.execute(
+                'INSERT INTO Address (AddressID, address_type, unit, street, house_num, city, state, zip) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                (next_address_id, 'location', unit, street, house_num, city, state, zip))
+            connection.commit()
             connection.close()
 
             flash('Service location added successfully!', 'success')
@@ -161,55 +178,61 @@ def add_location():
 
 
 # Route for enrolling devices in a service location
-# @app.route('/enroll_device/<int:location_id>', methods=['GET', 'POST'])
-# def enroll_device(location_id):
-#     if 'user_id' in session:
-#         user_id = session['user_id']
-#         connection = get_db_connection()
-#         cursor = connection.cursor()
+@app.route('/enroll_device/<int:location_id>', methods=['GET', 'POST'])
+def enroll_device(location_id):
+    if 'user_id' in session:
+        user_id = session['user_id']
+        connection = get_db_connection()
+        cursor = connection.cursor()
 
-#         if request.method == 'POST':
-#             device_id = request.form['device_id']
-#             model_type = request.form['model_type']
-#             model_number = request.form['model_number']
-#             other_details = request.form['other_details']
+        if request.method == 'POST':
+            model_id = request.form['model_id']
+            model_type = request.form['model_type']
+            model_number = request.form['model_number']
+            other_details = request.form['other_details']
 
-#             cursor.execute(
-#                 'INSERT INTO EnrolledDevice (DeviceID, LocationID) VALUES (?, ?)',
-#                 (device_id, location_id)
-#             )
-#             connection.commit()
+            next_device_id = get_next_DeviceID()
+            cursor.execute(
+                'INSERT INTO EnrolledDevice (DeviceID, LocationID, ModelID, d_hidden) VALUES (?, ?, ?, ?)',
+                (next_device_id, location_id, model_id, 0),
+            )
+            connection.commit()
+            cursor.execute(
+                'INSERT INTO DeviceModel (ModelID, model_type, model_number, other_details) VALUES (?, ?, ?, ?)',
+                (next_device_id, model_type, model_number, other_details)
+            )
+            connection.commit()
 
-#             flash('Device enrolled successfully!', 'success')
-#             return redirect(url_for('dashboard'))
+            flash('Device enrolled successfully!', 'success')
+            return redirect(url_for('dashboard'))
 
-#         connection.close()
+        connection.close()
 
-#         return render_template('enroll_device.html', location_id=location_id)
-#     else:
-#         return redirect(url_for('login'))
+        return render_template('enroll_device.html', location_id=location_id)
+    else:
+        return redirect(url_for('login'))
 
 
-# # Route for displaying enrolled devices in a service location
-# @app.route('/devices/<int:location_id>')
-# def devices(location_id):
-#     if 'user_id' in session:
-#         connection = get_db_connection()
-#         cursor = connection.cursor()
+# Route for displaying enrolled devices in a service location
+@app.route('/devices/<int:location_id>')
+def devices(location_id):
+    if 'user_id' in session:
+        connection = get_db_connection()
+        cursor = connection.cursor()
 
-#         # Retrieve enrolled devices for the specified location
-#         enrolled_devices = cursor.execute(
-#             'SELECT ed.*, dm.model_type, dm.model_number FROM EnrolledDevice ed '
-#             'JOIN DeviceModel dm ON ed.ModelID = dm.ModelID '
-#             'WHERE LocationID = ?',
-#             (location_id,)
-#         ).fetchall()
+        # Retrieve enrolled devices for the specified location
+        enrolled_devices = cursor.execute(
+            'SELECT ed.*, dm.model_type, dm.model_number FROM EnrolledDevice ed '
+            'JOIN DeviceModel dm ON ed.ModelID = dm.ModelID '
+            'WHERE LocationID = ?',
+            (location_id,)
+        ).fetchall()
 
-#         connection.close()
+        connection.close()
 
-#         return render_template('devices.html', enrolled_devices=enrolled_devices)
-#     else:
-#         return redirect(url_for('login'))
+        return render_template('devices.html', enrolled_devices=enrolled_devices)
+    else:
+        return redirect(url_for('login'))
 
 
 
