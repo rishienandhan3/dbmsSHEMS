@@ -12,8 +12,9 @@ app.config['SECRET_KEY'] = 'your_secret_key'  # Replace with a secret key for se
 # cursor = conn.cursor()
 # Database connection function
 def get_db_connection():
-    connection = sqlite3.connect('database.db')
+    connection = sqlite3.connect('shems.db')
     connection.row_factory = sqlite3.Row
+    # cursor.execute('')
     return connection
 
 @app.route('/')
@@ -31,7 +32,7 @@ def register():
         connection = get_db_connection()
         cursor = connection.cursor()
 
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password, method='pbkdf2')
 
         cursor.execute('INSERT INTO User (username, password) VALUES (?, ?)', (username, hashed_password))
         connection.commit()
@@ -55,7 +56,7 @@ def login():
         user = cursor.execute('SELECT * FROM User WHERE username = ?', (username,)).fetchone()
 
         if user and check_password_hash(user['password'], password):
-            session['user_id'] = user['id']
+            session['user_id'] = user['username']
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -67,8 +68,11 @@ def login():
 # Route for the user dashboard
 @app.route('/dashboard')
 def dashboard():
-    # Render the user dashboard with energy consumption views
-    # ...
+    if 'user_id' in session:
+        # Implement your dashboard logic here
+        return render_template('dashboard.html')
+    else:
+        return redirect(url_for('login'))
 
 # Route for user logout
 @app.route('/logout')
