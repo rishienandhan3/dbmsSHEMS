@@ -22,7 +22,8 @@
                 <p>Bedrooms: {{location.bedrooms}}</p>
                 <p>Location: {{location.square_footage}}</p>
                 <p>Occupants: {{location.occupants}}</p>
-                                   
+                <a href="{{ url_for('enroll_device') }}" class="btn btn-rounded btn-outline-secondary">Enroll Devices</a>
+                <a href="{{ url_for('devices') }}" class="btn btn-rounded btn-outline-secondary">View Devices</a>                    
             </div>
             </div>
         </div>
@@ -41,8 +42,7 @@
 
     <!-- <h3>Total Cost Per Location:</h3> -->
 
-    <h3>How Your Energy Cost Compares to Others:</h3>
-    
+    <!-- <h3>How Your Energy Cost Compares to Others:</h3> -->
 
     <!-- <h3>Your Most Expensive Hours:</h3> -->
 
