@@ -82,11 +82,13 @@ def dashboard():
     else:
         return redirect(url_for('login'))
 
+
 # Route for user logout
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('home'))
+
 
 # Route for adding a new service location
 @app.route('/add_location', methods=['GET', 'POST'])
