@@ -6,5 +6,34 @@
   <h2 class="text-primary">User Dashboard</h2>
   <p>Welcome, {{ session.user_id }}!</p>
   <a href="/logout">Logout</a>
+
+    {% if user_locations %}
+    {% for location in user_locations %}
+        <div class="col-lg-3 col-md-6 col-sm-12">
+            <div class="card my-3">
+            <img src="{{url_for('static', filename='homepage_img.jpeg')}}"/>
+            <div class="card-body">
+                <div class="card-title">
+                    <h4>
+                        {{ location.LocationID }} Move-in:{{ location.move_in_date }}
+                    </h4>
+                </div>
+                <p>Square footage: location.square_footage</p>
+                <p>Bedrooms: location.bedrooms</p>
+                <p>Location: location.square_footage</p>
+                <p>Occupants: location.occupants</p>
+                <a href="{{ url_for('enroll_device') }}" class="btn btn-rounded btn-outline-secondary">Enroll Devices</a>
+                <a href="{{ url_for('devices') }}" class="btn btn-rounded btn-outline-secondary">View Devices</a>
+            </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% else %}
+        <div class="d-flex container mt-5">
+            <h3>No locations yet. Try adding a new location.</h3>
+        </div>
+    {% endif %}
+
+
 </div>
 {% endblock %}

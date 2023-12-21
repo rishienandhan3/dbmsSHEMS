@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Enroll Device Page{% endblock %}
+
+{% block content %}
+<div class="container mt-5 ms-5">
+  <h2 class="text-primary">Enroll Device</h2>
+  <form method="POST" action="{{ url_for('enroll_device', location_id=location_id) }}" class="container mt-3 mb-3">
+  <div class="col-6 mb-3">
+    <label for="device_id">Device ID:</label>
+    <input type="text" id="device_id" name="device_id" required>
+    <br><br>
+    <label for="model_type">Model Type:</label>
+    <input type="text" id="model_type" name="model_type" required>
+    <br><br>
+    <label for="model_number">Model Number:</label>
+    <input type="text" id="model_number" name="model_number" required>
+    <br><br>
+    <label for="other_details">Other Details:</label>
+    <input type="text" id="other_details" name="other_details" required>
+    <br><br>
+  </div>
+    <input type="submit" value="Enroll Device">
+  </form>
+</div>
+{% endblock %}

@@ -77,8 +77,11 @@ def login():
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' in session:
-        # Implement your dashboard logic here
-        return render_template('dashboard.html')
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        # Retrieve user's service locations
+        locations = cursor.execute('SELECT * FROM ServiceLocation WHERE UserID = ?', (user_id,)).fetchall()
+        return render_template('dashboard.html', user_locations=locations)
     else:
         return redirect(url_for('login'))
 
@@ -102,6 +105,13 @@ def add_location():
             bedrooms = request.form['bedrooms']
             occupants = request.form['occupants']
 
+            unit = request.form['unit']
+            street = request.form['street']
+            house_num = request.form['house_num']
+            city = request.form['city']
+            state = request.form['state']
+            zip = request.form['zip']
+
             connection = get_db_connection()
             cursor = connection.cursor()
 
@@ -118,6 +128,59 @@ def add_location():
         return render_template('add_location.html')
     else:
         return redirect(url_for('login'))
+
+
+# Route for enrolling devices in a service location
+@app.route('/enroll_device/<int:location_id>', methods=['GET', 'POST'])
+def enroll_device(location_id):
+    if 'user_id' in session:
+        user_id = session['user_id']
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        if request.method == 'POST':
+            device_id = request.form['device_id']
+            model_type = request.form['model_type']
+            model_number = request.form['model_number']
+            other_details = request.form['other_details']
+
+            cursor.execute(
+                'INSERT INTO EnrolledDevice (DeviceID, LocationID) VALUES (?, ?)',
+                (device_id, location_id)
+            )
+            connection.commit()
+
+            flash('Device enrolled successfully!', 'success')
+            return redirect(url_for('dashboard'))
+
+        connection.close()
+
+        return render_template('enroll_device.html', location_id=location_id)
+    else:
+        return redirect(url_for('login'))
+
+
+# Route for displaying enrolled devices in a service location
+@app.route('/devices/<int:location_id>')
+def devices(location_id):
+    if 'user_id' in session:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+
+        # Retrieve enrolled devices for the specified location
+        enrolled_devices = cursor.execute(
+            'SELECT ed.*, dm.model_type, dm.model_number FROM EnrolledDevice ed '
+            'JOIN DeviceModel dm ON ed.ModelID = dm.ModelID '
+            'WHERE LocationID = ?',
+            (location_id,)
+        ).fetchall()
+
+        connection.close()
+
+        return render_template('devices.html', enrolled_devices=enrolled_devices)
+    else:
+        return redirect(url_for('login'))
+
 
 
 if __name__ == '__main__':

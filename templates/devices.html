@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Show Devices Page{% endblock %}
+
+{% block content %}
+  <h2>Enrolled Devices</h2>
+  {% if enrolled_devices %}
+    <table>
+      <thead>
+        <tr>
+          <th>Device ID</th>
+          <th>Location ID</th>
+          <th>Model Type</th>
+          <th>Model Number</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for device in enrolled_devices %}
+          <tr>
+            <td>{{ device.DeviceID }}</td>
+            <td>{{ device.LocationID }}</td>
+            <td>{{ device.model_type }}</td>
+            <td>{{ device.model_number }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No enrolled devices found for this location.</p>
+  {% endif %}
+{% endblock %}
