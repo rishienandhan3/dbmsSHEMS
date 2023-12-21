@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container mt-5 ms-5">
   <h2 class="text-primary">User Dashboard</h2>
-  <p>Welcome, {{ session.user_id }}!</p>
+  <p>Welcome, {{ session.username }}!</p>
   <a href="/logout">Logout</a>
 
     {% if user_locations %}
@@ -18,12 +18,12 @@
                         {{ location.LocationID }} Move-in:{{ location.move_in_date }}
                     </h4>
                 </div>
-                <p>Square footage: location.square_footage</p>
-                <p>Bedrooms: location.bedrooms</p>
-                <p>Location: location.square_footage</p>
-                <p>Occupants: location.occupants</p>
+                <p>Square footage: {{location.square_footage}}</p>
+                <p>Bedrooms: {{location.bedrooms}}</p>
+                <p>Location: {{location.square_footage}}</p>
+                <p>Occupants: {{location.occupants}}</p>
                 <a href="{{ url_for('enroll_device') }}" class="btn btn-rounded btn-outline-secondary">Enroll Devices</a>
-                <a href="{{ url_for('devices') }}" class="btn btn-rounded btn-outline-secondary">View Devices</a>
+                <a href="{{ url_for('devices') }}" class="btn btn-rounded btn-outline-secondary">View Devices</a>                    
             </div>
             </div>
         </div>

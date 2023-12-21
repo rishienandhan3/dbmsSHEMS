@@ -306,7 +306,7 @@ connection.commit()
 
 # Create the EventData Table
 cursor.execute('''CREATE TABLE EnergyPrice (
-               price_time TIMESTAMP NOT NULL,
+               price_time VARCHAR(50) NOT NULL,
                zip VARCHAR(5) NOT NULL,
                hourly_price FLOAT(6) NOT NULL,
                PRIMARY KEY (price_time, zip));''')
@@ -314,5 +314,5 @@ connection.commit()
 
 connection.close()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
