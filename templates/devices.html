@@ -2,8 +2,10 @@
 {% block title %}Show Devices Page{% endblock %}
 
 {% block content %}
-  <h2>Enrolled Devices</h2>
+<div class="container mt-5 ms-5">
+  <h2 class="text-primary">Enrolled Devices</h2>
   {% if enrolled_devices %}
+  <div class="col-6 mb-3">
     <table>
       <thead>
         <tr>
@@ -24,7 +26,9 @@
         {% endfor %}
       </tbody>
     </table>
+  </div>
   {% else %}
     <p>No enrolled devices found for this location.</p>
   {% endif %}
+</div>
 {% endblock %}

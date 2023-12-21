@@ -126,7 +126,7 @@ cursor.execute('''CREATE TABLE EnrolledDevice (
                DeviceID INT(5) PRIMARY KEY,
                LocationID INT(5) NOT NULL,
                ModelID INT(5) NOT NULL,
-               d_hidden BOOLEAN NOT NULL,
+                d_hiddenBOOLEAN NOT NULL,
                FOREIGN KEY (LocationID) REFERENCES ServiceLocation(LocationID),
                FOREIGN KEY (ModelID) REFERENCES DeviceModel(ModelID));''')
 connection.commit()
