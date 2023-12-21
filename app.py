@@ -25,13 +25,24 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        email = request.form['email']
+        phone = request.form['phone']
+
+        unit = request.form['unit']
+        street = request.form['street']
+        house_num = request.form['house_num']
+        city = request.form['city']
+        state = request.form['state']
+        zip = request.form['zip']
 
         connection = get_db_connection()
         cursor = connection.cursor()
 
         hashed_password = generate_password_hash(password, method='pbkdf2')
 
-        cursor.execute('INSERT INTO User (username, password) VALUES (?, ?)', (username, hashed_password))
+        cursor.execute('INSERT INTO User (username, password, first_name, last_name, email, phone) VALUES (?, ?, ?, ?, ?, ?)', (username, hashed_password, first_name, last_name, email, phone))
         connection.commit()
         connection.close()
 
@@ -76,6 +87,35 @@ def dashboard():
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('home'))
+
+# Route for adding a new service location
+@app.route('/add_location', methods=['GET', 'POST'])
+def add_location():
+    if 'user_id' in session:
+        if request.method == 'POST':
+            user_id = session['user_id']
+            address_id = request.form['address_id']
+            move_in_date = request.form['move_in_date']
+            square_footage = request.form['square_footage']
+            bedrooms = request.form['bedrooms']
+            occupants = request.form['occupants']
+
+            connection = get_db_connection()
+            cursor = connection.cursor()
+
+            cursor.execute(
+                'INSERT INTO ServiceLocation (UserID, AddressID, move_in_date, square_footage, bedrooms, occupants) VALUES (?, ?, ?, ?, ?, ?)',
+                (user_id, address_id, move_in_date, square_footage, bedrooms, occupants)
+            )
+            connection.commit()
+            connection.close()
+
+            flash('Service location added successfully!', 'success')
+            return redirect(url_for('dashboard'))
+
+        return render_template('add_location.html')
+    else:
+        return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
